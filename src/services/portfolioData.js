@@ -52,7 +52,7 @@ export const initialPortfolioData = {
       {
         id: "p3",
         title: "Full-Stack Web Delivery",
-        description: "Building responsive React.js interfaces, managing application state, and deploying end-to-end applications to Vercel over HTTPS."
+        description: "Building responsive React.js interfaces, managing application state, and deploying end-to-end applications to Netlify over HTTPS."
       }
     ]
   },
@@ -71,7 +71,7 @@ export const initialPortfolioData = {
       bullets: [
         "Developing hands-on backend solutions using FastAPI, Node.js, and structured REST API standards.",
         "Implementing Model Context Protocol (MCP) concepts and prompt engineering techniques for practical AI agents.",
-        "Executing full-stack assignments involving zero-downtime deployment on Vercel over public HTTPS.",
+        "Executing full-stack assignments involving zero-downtime deployment on Netlify over public HTTPS.",
         "Collaborating on modern web app architectures, automated testing, and developer tooling."
       ],
       technologies: [
@@ -81,7 +81,7 @@ export const initialPortfolioData = {
         "AI Agents",
         "MCP",
         "REST APIs",
-        "Vercel"
+        "Netlify"
       ],
       startMonth: "July",
       startYear: "2026",
