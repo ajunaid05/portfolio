@@ -5,7 +5,7 @@ import { GithubIcon, LinkedinIcon } from '../common/BrandIcons';
 export default function Contact({ profile }) {
   if (!profile) return null;
 
-  const userEmail = profile.email || "ahmadjuniad007.07@gmail.com";
+  const userEmail = profile.email || "ahmadjunaid007.07@gmail.com";
   const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(userEmail)}`;
 
   return (

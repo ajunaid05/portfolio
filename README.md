@@ -10,4 +10,4 @@ This project showcases my software engineering background, backend REST API deve
 - **Live Portfolio Website:** [ahmadjunaid.netlify.app](https://ahmadjunaid.netlify.app)
 - **GitHub Profile:** [github.com/ajunaid05](https://github.com/ajunaid05)
 - **LinkedIn Profile:** [linkedin.com/in/ahmad-junaid-776720307](https://www.linkedin.com/in/ahmad-junaid-776720307/)
-- **Contact Email:** [ahmadjuniad007.07@gmail.com](mailto:ahmadjuniad007.07@gmail.com)
+- **Contact Email:** [ahmadjunaid007.07@gmail.com](mailto:ahmadjunaid007.07@gmail.com)

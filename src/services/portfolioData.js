@@ -11,7 +11,7 @@ export const initialPortfolioData = {
     subheadline: "7th Semester BS Software Engineering @ COMSATS University Islamabad (Lahore Campus)",
     bio: "Passionate software engineer building high-performance backend systems, REST APIs, and practical AI agent workflows. Currently gaining hands-on backend AI experience at FlyRank while developing an episodic memory AI architecture for my final year project (NiHA).",
     location: "Lahore, Pakistan",
-    email: "ahmadjuniad007.07@gmail.com",
+    email: "ahmadjunaid007.07@gmail.com",
     githubUrl: "https://github.com/ajunaid05",
     linkedinUrl: "https://www.linkedin.com/in/ahmad-junaid-776720307/",
     cvUrl: "https://drive.google.com/file/d/1aYN55ObztePm3dJfGTEwkFXnj0ragW5W/view?usp=sharing",
