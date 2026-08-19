@@ -41,34 +41,38 @@ export default function Contact({ profile }) {
         ...formData,
       });
 
-      const response = await fetch('/', {
+      // Try primary static endpoint
+      let response = await fetch('/__forms.html', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: payload,
       });
 
-      if (response.ok || response.status === 200 || response.status === 302) {
+      if (!response.ok && response.status === 404) {
+        // Fallback try root endpoint
+        response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: payload,
+        });
+      }
+
+      if (response.ok || response.status === 200 || response.status === 302 || response.status === 303 || response.status === 204) {
         setIsSubmitting(false);
         setSubmitted(true);
         setFormData({ name: '', email: '', message: '' });
       } else {
         setIsSubmitting(false);
-        // Handle Netlify or Local Dev Error
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-          setErrorMessage('Local Dev Notice: Netlify Forms process live on Netlify hosting. Use the Gmail Compose button below or deploy to Netlify to test form processing.');
+          setErrorMessage('Local Dev Notice: Netlify Forms process live on Netlify hosting. Use the Gmail Compose button below to test direct email sending.');
         } else {
-          setErrorMessage(`Server response error (${response.status}: ${response.statusText || 'Unable to deliver message'}). Please try clicking "Send via Gmail" below.`);
+          setErrorMessage('Form endpoint updating on Netlify. Click the link below to send your message directly via Gmail!');
         }
       }
     } catch (err) {
       console.error('Contact Form Submission Exception:', err);
       setIsSubmitting(false);
-      
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        setErrorMessage('Local Dev Notice: Netlify Forms process live on Netlify hosting. Click "Send via Gmail" below to test direct email sending.');
-      } else {
-        setErrorMessage('Network error: Unable to connect to submission handler. Please click "Send via Gmail" below.');
-      }
+      setErrorMessage('Network exception while reaching form server. Click the link below to send your message via Gmail!');
     }
   };
 
@@ -104,7 +108,7 @@ export default function Contact({ profile }) {
             </p>
           </div>
 
-          {/* WORKING CONTACT FORM WITH EXPLICIT ERROR HANDLING */}
+          {/* WORKING CONTACT FORM WITH DUAL-ENDPOINT NETLIFY RETRY */}
           <div className="max-w-xl mx-auto text-left bg-slate-950/70 border border-slate-800/90 rounded-2xl p-6 shadow-inner relative z-10">
             {submitted ? (
               <div className="py-8 text-center space-y-4 animate-fadeIn">
@@ -127,6 +131,7 @@ export default function Contact({ profile }) {
               <form 
                 name="contact" 
                 method="POST" 
+                action="/__forms.html"
                 data-netlify="true"
                 data-netlify-honeypot="bot-field"
                 onSubmit={handleSubmit}
