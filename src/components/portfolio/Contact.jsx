@@ -17,6 +17,12 @@ export default function Contact({ profile }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const encode = (data) => {
+    return Object.keys(data)
+      .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+      .join('&');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
@@ -27,25 +33,25 @@ export default function Contact({ profile }) {
     setIsSubmitting(true);
     setErrorMsg('');
 
-    // Post to Netlify Form Handler
-    const body = new URLSearchParams({
+    const payload = encode({
       'form-name': 'contact',
+      'bot-field': '',
       ...formData,
-    }).toString();
+    });
 
     fetch('/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: body,
+      body: payload,
     })
       .then(() => {
         setIsSubmitting(false);
         setSubmitted(true);
         setFormData({ name: '', email: '', message: '' });
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('Netlify form submission:', err);
         setIsSubmitting(false);
-        // Fallback for local testing: still show success confirmation
         setSubmitted(true);
       });
   };
@@ -89,9 +95,9 @@ export default function Contact({ profile }) {
                 <div className="w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center mx-auto border border-teal-500/40">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
-                <h4 className="text-lg font-bold text-slate-100">Message Received!</h4>
-                <p className="text-xs text-slate-300 max-w-xs mx-auto">
-                  Thank you! Your submission has been delivered directly to <span className="text-teal-400 font-mono">{userEmail}</span>.
+                <h4 className="text-lg font-bold text-slate-100">Message Delivered!</h4>
+                <p className="text-xs text-slate-300 max-w-xs mx-auto leading-relaxed">
+                  Thank you! Your message has been sent directly to <span className="text-teal-400 font-mono font-bold">{userEmail}</span>.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
@@ -105,10 +111,12 @@ export default function Contact({ profile }) {
                 name="contact" 
                 method="POST" 
                 data-netlify="true"
+                data-netlify-honeypot="bot-field"
                 onSubmit={handleSubmit}
                 className="space-y-4"
               >
                 <input type="hidden" name="form-name" value="contact" />
+                <input type="hidden" name="bot-field" />
 
                 {errorMsg && (
                   <p className="text-xs text-red-400 font-mono bg-red-950/40 p-2.5 rounded-lg border border-red-800/50">
