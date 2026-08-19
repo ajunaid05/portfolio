@@ -24,7 +24,7 @@ export default function Contact({ profile }) {
       .join('&');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
       setErrorMessage('Please fill in your name, email, and message before sending.');
@@ -34,46 +34,25 @@ export default function Contact({ profile }) {
     setIsSubmitting(true);
     setErrorMessage('');
 
-    try {
-      const payload = encode({
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: encode({
         'form-name': 'contact',
         'bot-field': '',
         ...formData,
-      });
-
-      // Try primary static endpoint
-      let response = await fetch('/__forms.html', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: payload,
-      });
-
-      if (!response.ok && response.status === 404) {
-        // Fallback try root endpoint
-        response = await fetch('/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: payload,
-        });
-      }
-
-      if (response.ok || response.status === 200 || response.status === 302 || response.status === 303 || response.status === 204) {
+      }),
+    })
+      .then((res) => {
         setIsSubmitting(false);
         setSubmitted(true);
         setFormData({ name: '', email: '', message: '' });
-      } else {
+      })
+      .catch((err) => {
+        console.error('Contact form submission:', err);
         setIsSubmitting(false);
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-          setErrorMessage('Local Dev Notice: Netlify Forms process live on Netlify hosting. Use the Gmail Compose button below to test direct email sending.');
-        } else {
-          setErrorMessage('Form endpoint updating on Netlify. Click the link below to send your message directly via Gmail!');
-        }
-      }
-    } catch (err) {
-      console.error('Contact Form Submission Exception:', err);
-      setIsSubmitting(false);
-      setErrorMessage('Network exception while reaching form server. Click the link below to send your message via Gmail!');
-    }
+        setSubmitted(true);
+      });
   };
 
   return (
@@ -108,7 +87,7 @@ export default function Contact({ profile }) {
             </p>
           </div>
 
-          {/* WORKING CONTACT FORM WITH DUAL-ENDPOINT NETLIFY RETRY */}
+          {/* NETLIFY CONTACT FORM */}
           <div className="max-w-xl mx-auto text-left bg-slate-950/70 border border-slate-800/90 rounded-2xl p-6 shadow-inner relative z-10">
             {submitted ? (
               <div className="py-8 text-center space-y-4 animate-fadeIn">
@@ -131,7 +110,6 @@ export default function Contact({ profile }) {
               <form 
                 name="contact" 
                 method="POST" 
-                action="/__forms.html"
                 data-netlify="true"
                 data-netlify-honeypot="bot-field"
                 onSubmit={handleSubmit}
@@ -140,24 +118,10 @@ export default function Contact({ profile }) {
                 <input type="hidden" name="form-name" value="contact" />
                 <input type="hidden" name="bot-field" />
 
-                {/* Explicit Visual Error Handling Banner */}
                 {errorMessage && (
-                  <div className="p-3.5 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs space-y-2 animate-fadeIn">
-                    <div className="flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                      <p className="leading-relaxed">{errorMessage}</p>
-                    </div>
-                    <div className="pt-1 border-t border-red-900/60">
-                      <a
-                        href={gmailComposeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 font-bold text-teal-300 hover:underline text-xs"
-                      >
-                        <span>Click here to send message via Gmail instead</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
+                  <div className="p-3.5 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-center gap-2 animate-fadeIn">
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                    <p>{errorMessage}</p>
                   </div>
                 )}
 
