@@ -1,12 +1,13 @@
-# Ahmad Junaid
+# Ahmad Junaid — Personal Portfolio
 
-Software Engineering Student (7th Semester) at COMSATS University Islamabad (Lahore Campus) and Backend AI Engineering Intern at FlyRank.
+Welcome to my personal portfolio repository. I am a 7th Semester Software Engineering student at COMSATS University Islamabad (Lahore Campus) and a Backend AI Engineering Intern at FlyRank.
 
-### 🌐 Live Portfolio
-- **Website:** [ahmadjunaid.netlify.app](https://ahmadjunaid.netlify.app)
-- **Contact:** [ahmadjuniad007.07@gmail.com](mailto:ahmadjuniad007.07@gmail.com)
+This project showcases my software engineering background, backend REST API development, FlyRank internship experience, technical certifications from Anthropic & Google, and my Final Year Capstone Project (**NiHA — Conversational AI with Episodic Memory**).
 
 ---
 
-### 📄 Assignment Documents
-- **DNS Walkthrough:** [DNS_Walkthrough.md](./DNS_Walkthrough.md)
+### 🌐 Live Website & Connect
+- **Live Portfolio Website:** [ahmadjunaid.netlify.app](https://ahmadjunaid.netlify.app)
+- **GitHub Profile:** [github.com/ajunaid05](https://github.com/ajunaid05)
+- **LinkedIn Profile:** [linkedin.com/in/ahmad-junaid-776720307](https://www.linkedin.com/in/ahmad-junaid-776720307/)
+- **Contact Email:** [ahmadjuniad007.07@gmail.com](mailto:ahmadjuniad007.07@gmail.com)
