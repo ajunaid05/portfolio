@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
-import { Mail, Calendar, FileText, MessageSquare, ExternalLink, Send, CheckCircle2 } from 'lucide-react';
+import { Mail, Calendar, FileText, MessageSquare, ExternalLink, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from '../common/BrandIcons';
 
 export default function Contact({ profile }) {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   if (!profile) return null;
 
   const userEmail = profile.email || "ahmadjuniad007.07@gmail.com";
-  const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(userEmail)}`;
+  const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(userEmail)}&su=${encodeURIComponent("Portfolio Inquiry from " + (formData.name || "Visitor"))}&body=${encodeURIComponent(formData.message || "")}`;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errorMessage) setErrorMessage('');
   };
 
   const encode = (data) => {
@@ -23,37 +24,52 @@ export default function Contact({ profile }) {
       .join('&');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      setErrorMsg('Please fill in all fields before sending.');
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setErrorMessage('Please fill in your name, email, and message before sending.');
       return;
     }
 
     setIsSubmitting(true);
-    setErrorMsg('');
+    setErrorMessage('');
 
-    const payload = encode({
-      'form-name': 'contact',
-      'bot-field': '',
-      ...formData,
-    });
+    try {
+      const payload = encode({
+        'form-name': 'contact',
+        'bot-field': '',
+        ...formData,
+      });
 
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: payload,
-    })
-      .then(() => {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: payload,
+      });
+
+      if (response.ok || response.status === 200 || response.status === 302) {
         setIsSubmitting(false);
         setSubmitted(true);
         setFormData({ name: '', email: '', message: '' });
-      })
-      .catch((err) => {
-        console.error('Netlify form submission:', err);
+      } else {
         setIsSubmitting(false);
-        setSubmitted(true);
-      });
+        // Handle Netlify or Local Dev Error
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          setErrorMessage('Local Dev Notice: Netlify Forms process live on Netlify hosting. Use the Gmail Compose button below or deploy to Netlify to test form processing.');
+        } else {
+          setErrorMessage(`Server response error (${response.status}: ${response.statusText || 'Unable to deliver message'}). Please try clicking "Send via Gmail" below.`);
+        }
+      }
+    } catch (err) {
+      console.error('Contact Form Submission Exception:', err);
+      setIsSubmitting(false);
+      
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        setErrorMessage('Local Dev Notice: Netlify Forms process live on Netlify hosting. Click "Send via Gmail" below to test direct email sending.');
+      } else {
+        setErrorMessage('Network error: Unable to connect to submission handler. Please click "Send via Gmail" below.');
+      }
+    }
   };
 
   return (
@@ -88,10 +104,10 @@ export default function Contact({ profile }) {
             </p>
           </div>
 
-          {/* NETLIFY WORKING CONTACT FORM */}
+          {/* WORKING CONTACT FORM WITH EXPLICIT ERROR HANDLING */}
           <div className="max-w-xl mx-auto text-left bg-slate-950/70 border border-slate-800/90 rounded-2xl p-6 shadow-inner relative z-10">
             {submitted ? (
-              <div className="py-8 text-center space-y-3 animate-fadeIn">
+              <div className="py-8 text-center space-y-4 animate-fadeIn">
                 <div className="w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center mx-auto border border-teal-500/40">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
@@ -100,8 +116,9 @@ export default function Contact({ profile }) {
                   Thank you! Your message has been sent directly to <span className="text-teal-400 font-mono font-bold">{userEmail}</span>.
                 </p>
                 <button
+                  type="button"
                   onClick={() => setSubmitted(false)}
-                  className="mt-4 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-xs font-mono text-slate-300 rounded-lg border border-slate-800 cursor-pointer"
+                  className="mt-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-xs font-mono text-slate-300 rounded-lg border border-slate-800 cursor-pointer transition-colors"
                 >
                   Send Another Message
                 </button>
@@ -118,10 +135,25 @@ export default function Contact({ profile }) {
                 <input type="hidden" name="form-name" value="contact" />
                 <input type="hidden" name="bot-field" />
 
-                {errorMsg && (
-                  <p className="text-xs text-red-400 font-mono bg-red-950/40 p-2.5 rounded-lg border border-red-800/50">
-                    {errorMsg}
-                  </p>
+                {/* Explicit Visual Error Handling Banner */}
+                {errorMessage && (
+                  <div className="p-3.5 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs space-y-2 animate-fadeIn">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                      <p className="leading-relaxed">{errorMessage}</p>
+                    </div>
+                    <div className="pt-1 border-t border-red-900/60">
+                      <a
+                        href={gmailComposeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 font-bold text-teal-300 hover:underline text-xs"
+                      >
+                        <span>Click here to send message via Gmail instead</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
